@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>个人博客</title>
+    <link rel="stylesheet" type="text/css" href="./css/base.css">
+    <link rel="stylesheet" type="text/css" href="./css/index.css">
+    <script type="text/javascript" src="js/vue-2.6.3.js"></script>
+    <script src="https://cdn.bootcss.com/axios/0.19.0-beta.1/axios.min.js"></script>
+</head>
+<body>
+	<header class="header">
+		<div class="container">
+			<a href="/" class="title">我的个人博客 | 技术博客</a>
+			<ul class="menu">
+				<li><a href="/">首页</a></li>
+				<li><a href="/sitemap.html">地图</a></li>
+				<li><a href="/about.html">关于</a></li>
+				<li><a href="/guestbook.html">留言</a></li>
+			</ul>
+			<div class="search_bar">
+				<input type="text" name="" placeholder="输入关键词查找">
+				<button>搜索</button>
+			</div>
+		</div>
+	</header>
+	<div class="content">
+		<div class="content_left">
+			<div class="every_day" id="every_day">
+				<span class="tip">每日一句</span>
+				<div v-html="getContent">
+					<!-- It's been my experience that you can nearly always enjoy something if you make up your mind firmly that you will.<br>
+
+					我的经验是，事情只要下定决心去享受，就基本都能享受。———— 《小小安妮》 -->
+				</div>
+			</div>
+			<div class="article_list" id="article_list">
+				<div class="article" v-for="(article, index) in articleList" :key="index">
+					<a v-bind:href="article.link" class="article_title">{{article.title}}</a>
+					<p class="article_content">
+						{{article.content}}
+					</p>
+					<div class="article_foot">
+						发布于{{article.date}} |  浏览({{article.views}}) | Tags：{{article.tags}}
+					</div>
+				</div>
+				<!-- <div class="article">
+					<a href="#" class="article_title">四联杀幽门螺杆菌第三天</a>
+					<p class="article_content">
+						前段时间总是干呕嗳气，吃饭很容易饱，饭后恶心想吐，喝咖啡后更剧烈。首次医院门诊，医生说是可能是胃动力不足消化不良，给开了点儿中成药，没要。问医生是否可以做一下钡餐或胃镜检查一下，于是预约了第二天的胃镜。第一次做胃镜，很顺利。胃镜报告显示胃角C2慢性萎缩性胃炎。几天后活检的病理结果显示慢性萎缩性胃炎，中度萎缩，中度炎症，中度活动，中度肠上皮化生，HP++……好...
+					</p>
+					<div class="article_foot">
+						发布于2018-10-30 |  浏览(578) | Tags：幽门螺杆菌 萎缩性胃炎
+					</div>
+				</div> -->
+				<div class="page_tool">
+					<ul>
+						<li v-for="(pageNum, index) in pageNumList" :key="index" v-on:click="jumpTo(pageNum.text, pageNum.page)" v-bind:class="{now_page: pageNum.text == page}">{{pageNum.text}}</li>
+						<!--<li><<</li>-->
+						<!--<li>1</li>-->
+						<!--<li>2</li>-->
+						<!--<li>3</li>-->
+						<!--<li>4</li>-->
+						<!--<li>>></li>-->
+					</ul>
+				</div>
+			</div>
+		</div>
+		<div class="content_right">
+			<div class="right_module" id="random_tags">
+				<div>随机标签云</div>
+				<a v-for="(tag, index) in tags" :key="index" v-bind:style="{color: randomColor(), fontSize: randomSize()}" :href="'/?tagId=' + tag.id">{{tag.tag}}</a>
+			</div>
+			<div class="right_module" id="new_hot">
+				<div>最近热门</div>
+				<ul>
+					<li v-for="(hot, index) in hotList" :key="index"><a v-bind:href="'/blog_detail.html?bid=' + hot.id">{{hot.title}}</a></li>
+				</ul>
+			</div>
+			<div class="right_module" id="new_comments">
+				<div>最新评论</div>
+				<ul>
+					<li v-for="(comment, index) in commentList" :key="index">
+						<div>
+							<span>{{comment.user_name}}</span>
+							<span class="pull_right">[{{comment.ctime}}]</span>
+						</div>
+						<p><a href="#">{{comment.comments}}</a></p>
+					</li>
+					<!-- <li>
+						<div>
+							<span>阿杰学长</span>
+							<span class="pull_right">[1周前]</span>
+						</div>
+						<p><a href="#">你好，启用ssl代理是SSL Pro赵晨阳</a></p>
+					</li> -->
+				</ul>
+			</div>
+			<div class="right_module">
+				<div>友情链接</div>
+				<span><a href="#">挨踢茶馆</a></span>
+				<span><a href="#">挨踢茶馆</a></span>
+				<span><a href="#">挨踢茶馆</a></span>
+				<span><a href="#">佛布朗斯基</a></span>
+				<span><a href="#">佛布朗斯基</a></span>
+				<span><a href="#">佛布朗斯基</a></span>
+				<span><a href="#">挨踢茶馆</a></span>
+				<span><a href="#">挨踢茶馆</a></span>
+				<span><a href="#">挨踢茶馆</a></span>
+			</div>
+		</div>
+	</div>
+	<footer class="footer">
+		<div class="container">
+			<div class="link">
+				<a href="#">C/C++</a>
+				<a href="#">CSS/DIV</a>
+				<a href="#">java</a>
+				<a href="#">java</a>
+				<a href="#">java</a>
+				<a href="#">java</a>
+				<a href="#">java</a>
+				<a href="#">java</a>
+				<a href="#">java</a>
+				<a href="#">java</a>
+				<a href="#">java</a>
+				<a href="#">java</a>
+				<a href="#">java</a>
+				<a href="#">java</a>
+				<a href="#">java</a>
+				<a href="#">java</a>
+				<a href="#">java</a>
+				<a href="#">java</a>
+				<a href="#">java</a>
+				<a href="#">java</a>
+				<a href="#">java</a>
+				<a href="#">java</a>
+				<a href="#">java</a>
+				<a href="#">java</a>
+				<a href="#">Linux</a>
+				<a href="#">Linux</a>
+				<a href="#">Linux</a>
+				<a href="#">Linux</a>
+				<a href="#">Linux</a>
+				<a href="#">Linux</a>
+				<a href="#">Linux</a>
+				<a href="#">Linux</a>
+			</div>
+			<p>
+				Copyright © 2010-2017 郑晓个人博客 All rights reserved. 由免费开源的WordPress强力驱动. 鲁ICP备14017955号站长统计
+			</p>
+		</div>
+	</footer>
+	<script type="text/javascript" src="./js/index.js"></script>
+	<script type="text/javascript" src="./js/base.js"></script>
+</body>
+</html>
